@@ -1,0 +1,89 @@
+import java.util.*;
+ 
+public class sortingTest {
+ 
+    static class Student {
+        int id, mark;
+        Student(int id, int mark) { 
+          this.id = id; 
+          this.mark = mark; 
+        }
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int T = sc.nextInt();
+        while (T-- > 0) {
+            int n = sc.nextInt();
+ 
+            int[] ids = new int[n];
+            for (int i = 0; i < n; i++) {
+              ids[i] = sc.nextInt();
+            }
+ 
+            int[] mks = new int[n];
+            for (int i = 0; i < n; i++) {
+              mks[i] = sc.nextInt();
+            }
+ 
+            
+            int[] order = new int[n];
+            for (int i = 0; i < n; i++) {
+              order[i] = i;
+            }
+ 
+            
+            for (int i = 0; i < n - 1; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    int a = order[i], b = order[j];
+                    boolean better = false;
+                    if (mks[a] < mks[b]) {
+                      better = true;
+                    }
+                    else if (mks[a] == mks[b] && ids[a] > ids[b]) {
+                      better = true;
+                    }
+                    if (better) {
+                        int temp = order[i];
+                        order[i] = order[j];
+                        order[j] = temp;
+                    }
+                }
+            }
+ 
+            
+            int[] inarr = new int[n];
+            for (int pos = 0; pos < n; pos++) {
+                inarr[order[pos]] = pos;
+            }
+ 
+            
+            int[] toarr = inarr.clone();
+ 
+            
+            boolean[] vis = new boolean[n];
+            int cycles = 0;
+            for (int i = 0; i < n; i++) {
+              if (vis[i]) {
+                continue;
+              }
+                cycles++;
+                int k = i;
+                while (!vis[k]) {
+                    vis[k] = true;
+                    k = toarr[k];
+                }
+            }
+            int minSwaps = n - cycles;
+            
+            System.out.println("Minimum swaps: " + minSwaps);
+            for (int pos = 0; pos < n; pos++) {
+                int idx = order[pos];
+                System.out.println("ID: " + ids[idx] + " Mark: " + mks[idx]);
+            }
+        }
+ 
+        sc.close();
+    }
+}

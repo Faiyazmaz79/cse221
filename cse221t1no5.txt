@@ -1,0 +1,113 @@
+import java.util.*;
+ 
+public class Main {
+  
+    static void arrange(int[] a) {
+        int n = a.length;
+        int[] buf = new int[n];
+        arrangeRec(a, 0, n, buf);
+    }
+ 
+    static void arrangeRec(int[] a, int l, int r, int[] buf) {
+      if (r - l <= 1) {
+        return;
+      }
+        int m = (l + r) >>> 1;
+        arrangeRec(a, l, m, buf);
+        arrangeRec(a, m, r, buf);
+ 
+        int i = l, j = m, k = 0;
+        while (i < m && j < r) {
+          if (a[i] <= a[j]) {
+            buf[k++] = a[i++];
+          }
+          else {
+            buf[k++] = a[j++];
+          }
+        }
+        while (i < m) {
+          buf[k++] = a[i++];
+        }
+        while (j < r) {
+          buf[k++] = a[j++];
+        }
+ 
+        for (int t = 0; t < k; t++) {
+          a[l + t] = buf[t];
+        }
+    }
+ 
+    static void reverse3(int[] a, int s) {
+        int t = a[s];
+        a[s] = a[s + 2];
+        a[s + 2] = t;
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        int[] A = new int[n];
+        for (int i = 0; i < n; i++) {
+          A[i] = sc.nextInt();
+        }
+ 
+        int[] B = A.clone();
+        arrange(B);
+ 
+        HashMap<Integer, int[]> cntA = new HashMap<>();
+        HashMap<Integer, int[]> cntB = new HashMap<>();
+ 
+        for (int i = 0; i < n; i++) {
+            cntA.computeIfAbsent(A[i], k -> new int[2])[i & 1]++; 
+            cntB.computeIfAbsent(B[i], k -> new int[2])[i & 1]++;
+        }
+ 
+        boolean ok = true;
+        if (cntA.size() != cntB.size()) ok = false;
+        if (ok) {
+            for (Map.Entry<Integer, int[]> e : cntA.entrySet()) {
+                int v = e.getKey();
+                int[] ca = e.getValue();
+                int[] cb = cntB.get(v);
+                if (cb == null || ca[0] != cb[0] || ca[1] != cb[1]) { ok = false; break; }
+            }
+        }
+        if (!ok) {
+            System.out.println("NO");
+            return;
+        }
+ 
+        ArrayList<int[]> ops = new ArrayList<>();
+ 
+        for (int i = 0; i < n; i++) {
+            if (A[i] == B[i]) continue;
+ 
+            int k = -1;
+            for (int j = i + 1; j < n; j++) {
+                if (((j - i) & 1) == 0 && A[j] == B[i]) { k = j; break; }
+            }
+            if (k == -1) { 
+                System.out.println("NO");
+                return;
+            }
+ 
+            while (k - i >= 2) {
+                reverse3(A, k - 2);                 
+                ops.add(new int[]{(k - 2) + 1, (k - 2) + 3}); 
+                k -= 2;
+            }
+        }
+ 
+        
+        System.out.println("YES");
+        System.out.println(ops.size());
+        StringBuilder sb = new StringBuilder();
+      for (int[] op : ops) {
+        sb.append(op[0]).append(' ').append(op[1]).append('\n');
+      }
+        System.out.print(sb.toString());
+ 
+        sc.close();
+    }
+}

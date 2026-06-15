@@ -1,0 +1,942 @@
+Lab 4 
+A
+import java.util.Scanner;
+ 
+public class task1easyG {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt(); // no of nodes
+        int M = sc.nextInt(); // no of edges
+ 
+        int[][] adj = new int[N + 1][N + 1];
+ 
+        // all edges
+        for (int i = 0; i < M; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            int w = sc.nextInt();
+            adj[u][v] = w;
+        }
+ 
+        StringBuilder st = new StringBuilder();
+ 
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                st.append(adj[i][j]).append(' ');
+            }
+            st.append('\n');
+        }
+ 
+        System.out.print(st.toString());
+        sc.close();
+    }
+}
+
+
+B
+import java.util.*;
+ 
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt(); // no of nodes
+        int M = sc.nextInt(); // no of edges
+ 
+        int[] u = new int[M];
+        int[] v = new int[M];
+        int[] w = new int[M];
+ 
+        for (int i = 0; i < M; i++) {
+          u[i] = sc.nextInt();
+        }
+        for (int i = 0; i < M; i++) {
+          v[i] = sc.nextInt();
+        }
+        for (int i = 0; i < M; i++) { 
+          w[i] = sc.nextInt();
+        }
+ 
+        // list
+        ArrayList<ArrayList<String>> adj = new ArrayList<>();
+ 
+        for (int i = 0; i <= N; i++) {
+            adj.add(new ArrayList<>());
+        }
+ 
+        
+        for (int i = 0; i < M; i++) {
+            int from = u[i];
+            int to = v[i];
+            int wt = w[i];
+            adj.get(from).add("(" + to + "," + wt + ")");
+        }
+ 
+        // output
+        for (int i = 1; i <= N; i++) {
+            System.out.print(i + ":");
+            if (!adj.get(i).isEmpty()) {
+                System.out.print(" ");
+                for (int j = 0; j < adj.get(i).size(); j++) {
+                    System.out.print(adj.get(i).get(j));
+                    if (j + 1 < adj.get(i).size()) {
+                      System.out.print(" ");
+                    }
+                }
+            }
+            System.out.println();
+        }
+ 
+        sc.close();
+    }
+}
+
+
+C
+import java.util.*;
+ 
+public class meTamorphosis {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt();  
+ 
+        int[][] adj = new int[N][N];  
+ 
+        for (int i = 0; i < N; i++) {
+            int k = sc.nextInt();  
+            for (int j = 0; j < k; j++) {
+                int to = sc.nextInt();
+                adj[i][to] = 1;   
+            }
+        }
+ 
+        
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(adj[i][j] + " ");
+            }
+            System.out.println();
+        }
+ 
+        sc.close();
+    }
+}
+
+
+D
+import java.util.Scanner;
+ 
+public class sevenB {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt(); 
+        int M = sc.nextInt(); 
+        int[] st = new int[M];
+        int[] degree = new int[N + 1]; 
+        
+        for (int i = 0; i < M; i++) {
+            st[i] = sc.nextInt();
+        }
+        
+        for (int i = 0; i < M; i++) {
+            int v = sc.nextInt();
+            int a = st[i];
+            int b = v;
+            
+            degree[a]++;
+            degree[b]++; 
+        }        
+        int oddCount = 0;
+        for (int i = 1; i <= N; i++) {
+            if (degree[i] % 2 != 0) {
+                oddCount++;
+            }
+        }
+        
+        if (oddCount == 0 || oddCount == 2) {
+            System.out.println("YES");
+        } else {
+            System.out.println("NO");
+        }
+        sc.close();
+    }
+}
+
+
+E
+import java.util.Scanner;
+ 
+public class queryE {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt(); 
+        int M = sc.nextInt(); 
+ 
+        int[] outdeg = new int[N + 1];
+        int[] indeg  = new int[N + 1];
+ 
+        int[] s = new int[M];
+        
+        for (int i = 0; i < M; i++) {
+            s[i] = sc.nextInt();
+        }
+       
+        for (int i = 0; i < M; i++) {
+            int v = sc.nextInt();
+            indeg[v]++;
+            outdeg[s[i]]++;
+        }         
+        for (int i = 1; i <= N; i++) {
+            int diff = indeg[i] - outdeg[i];
+            System.out.print(diff);
+            if (i < N) {
+                System.out.print(" ");
+            }
+        }
+ 
+        sc.close();
+    }
+}
+
+
+F
+import java.util.*;
+ 
+public class KingP {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt();  // N x N board
+        int x = sc.nextInt();  // king row
+        int y = sc.nextInt();  // king column
+ 
+        // 8 king moves
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1,  0,  1,-1, 1,-1, 0, 1};
+ 
+        ArrayList<int[]> moves = new ArrayList<>();
+ 
+        for (int i = 0; i < 8; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+ 
+            if (nx >= 1 && nx <= N && ny >= 1 && ny <= N) {
+                moves.add(new int[]{nx, ny});
+            }
+        }
+ 
+        
+        Collections.sort(moves, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                if (a[0] != b[0]) return a[0] - b[0];
+                return a[1] - b[1];
+            }
+        
+        }); 
+ 
+        System.out.println(moves.size());
+ 
+        for (int[] mv : moves) {
+            System.out.println(mv[0] + " " + mv[1]);
+        }
+ 
+        sc.close();
+    }
+}
+
+
+G
+import java.io.*;
+import java.util.*;
+ 
+public class knightAttack {
+ 
+    public static int check(int x, int y) {
+        return x * 10000 + y; 
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+ 
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+ 
+        HashSet<Integer> knights = new HashSet<>();
+        int[] xs = new int[K];
+        int[] ys = new int[K];
+ 
+        for (int i = 0; i < K; i++) {
+            st = new StringTokenizer(br.readLine());
+            xs[i] = Integer.parseInt(st.nextToken());
+            ys[i] = Integer.parseInt(st.nextToken());
+            knights.add(check(xs[i], ys[i]));
+        }
+      
+        int[] dx = {-1, 1, 2, 2, 1, -1, -2, -2};
+        int[] dy = { 2, 2, 1, -1, -2, -2, 1, -1};
+ 
+        for (int i = 0; i < K; i++) {
+            int x = xs[i];
+            int y = ys[i];
+ 
+            for (int j = 0; j < 8; j++) {
+                int nx = x + dx[j];
+                int ny = y + dy[j];
+ 
+                if (nx >= 1 && nx <= N && ny >= 1 && ny <= M) {
+                    if (knights.contains(check(nx, ny))) {
+                        System.out.println("YES");
+                        return;
+                    }
+                }
+            }
+        }
+ 
+        System.out.println("NO");
+    }
+}
+
+
+H
+import java.util.*;
+import java.io.*;
+ 
+public class coPrime {
+  
+    public static int gcd(int a, int b) {
+        while (b != 0) {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+ 
+        int N = Integer.parseInt(st.nextToken());
+        int Q = Integer.parseInt(st.nextToken());
+ 
+        
+        ArrayList<Integer>[] adj = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            adj[i] = new ArrayList<>();
+        }
+ 
+        
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                if (i != j && gcd(i, j) == 1) {
+                    adj[i].add(j);
+                }
+            }
+        }
+ 
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+ 
+        
+        for (int qi = 0; qi < Q; qi++) {
+            st = new StringTokenizer(br.readLine());
+            int X = Integer.parseInt(st.nextToken());
+            long K = Long.parseLong(st.nextToken()); 
+ 
+            ArrayList<Integer> list = adj[X];
+            if (K <= 0 || K > list.size()) {
+                out.println(-1);
+            } else {
+                out.println(list.get((int)K - 1));
+            }
+        }
+ 
+        out.flush();
+        out.close();
+    }
+}
+
+
+
+Lab 5
+
+A
+import java.util.*;
+ 
+public class bfsTraversal {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int N = sc.nextInt();
+        int M = sc.nextInt();
+ 
+        
+        ArrayList<Integer>[] adj = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++)
+            adj[i] = new ArrayList<>();
+ 
+        // edges
+        for (int i = 0; i < M; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            adj[u].add(v);
+            adj[v].add(u);
+        }
+ 
+        //0 = unvisited, 1 = visited
+        int[] colour = new int[N + 1];
+ 
+       
+        Queue<Integer> Q = new LinkedList<>();
+ 
+       
+        colour[1] = 1;
+        Q.add(1);
+ 
+        
+        StringBuilder sb = new StringBuilder();
+ 
+        while (!Q.isEmpty()) {
+            int u = Q.poll();
+            sb.append(u).append(" ");
+ 
+            for (int v : adj[u]) {
+                if (colour[v] == 0) {
+                    colour[v] = 1;
+                    Q.add(v);
+                }
+            }
+        }
+ 
+        System.out.println(sb.toString().trim());
+    }
+}
+
+
+B
+import java.io.*;
+import java.util.*;
+ 
+public class dfsTraversal {
+    public static ArrayList<Integer>[] adj;
+    public static int[] colour;              
+    public static StringBuilder sb = new StringBuilder();
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        
+        st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        
+        int[] U = new int[M];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < M; i++) {
+            U[i] = Integer.parseInt(st.nextToken());
+        }
+        
+        int[] V = new int[M];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < M; i++) {
+            V[i] = Integer.parseInt(st.nextToken());
+        }
+        
+        adj = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            adj[i] = new ArrayList<>();
+        }
+ 
+        for (int i = 0; i < M; i++) {
+            int a = U[i];
+            int b = V[i];
+            adj[a].add(b);
+            adj[b].add(a); 
+        }
+        
+        colourInitializing(N);
+        
+        DFS(1);
+        
+        System.out.println(sb.toString());
+    }
+ 
+    public static void colourInitializing(int N) {
+        colour = new int[N + 1];          
+    }
+    
+    public static void DFS(int u) {
+        colour[u] = 1;
+        sb.append(u).append(' ');
+ 
+        for (int v : adj[u]) {
+            if (colour[v] == 0) {
+                DFS(v);
+            }
+        }
+    }
+}
+
+
+C
+import java.io.*;
+import java.util.*;
+ 
+public class uniqueGraph {
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+ 
+        st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int S = Integer.parseInt(st.nextToken());
+        int D = Integer.parseInt(st.nextToken());
+        
+        ArrayList<Integer>[] adj = (ArrayList<Integer>[]) new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            adj[i] = new ArrayList<>();
+        }
+ 
+        int[] U = new int[M];
+        int[] V = new int[M];
+ 
+        if (M > 0) {
+            st = new StringTokenizer(br.readLine());
+            for (int i = 0; i < M; i++) {
+                U[i] = Integer.parseInt(st.nextToken());
+            }
+ 
+            st = new StringTokenizer(br.readLine());
+            for (int i = 0; i < M; i++) {
+                V[i] = Integer.parseInt(st.nextToken());
+            }
+ 
+            for (int i = 0; i < M; i++) {
+                int a = U[i];
+                int b = V[i];
+                adj[a].add(b);
+                adj[b].add(a);
+            }
+        }
+ 
+        for (int i = 1; i <= N; i++) {
+            Collections.sort(adj[i]);
+        }
+ 
+        int[] dist = new int[N + 1];
+        int[] parent = new int[N + 1];
+        Arrays.fill(dist, -1);
+        Arrays.fill(parent, -1);
+ 
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        dist[S] = 0;
+        q.add(S);
+ 
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (u == D) break;  
+ 
+            for (int v : adj[u]) {
+                if (dist[v] == -1) {   
+                    dist[v] = dist[u] + 1;
+                    parent[v] = u;
+                    q.add(v);
+                }
+            }
+        }
+ 
+        if (dist[D] == -1) {
+            System.out.println(-1);
+            return;
+        }
+ 
+        ArrayList<Integer> path = new ArrayList<>();
+        int cur = D;
+        while (cur != -1) {
+            path.add(cur);
+            cur = parent[cur];
+        }
+ 
+        Collections.reverse(path);
+ 
+        System.out.println(path.size() - 1);
+ 
+        StringBuilder sb = new StringBuilder();
+        for (int x : path) {
+            sb.append(x).append(' ');
+        }
+        System.out.println(sb.toString());
+    }
+}
+
+
+D
+import java.io.*;
+import java.util.*;
+ 
+public class specificNode {
+    public static void bfs(int start, ArrayList<ArrayList<Integer>> adj, int[] dist, int[] parent) {
+        Arrays.fill(dist, -1);
+        Arrays.fill(parent, -1);
+ 
+        Queue<Integer> q = new ArrayDeque<>();
+        dist[start] = 0;   
+        q.add(start);
+ 
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            for (int v : adj.get(u)) {
+                if (dist[v] == -1) {         
+                    dist[v] = dist[u] + 1;   
+                    parent[v] = u;          
+                    q.add(v);
+                }
+            }
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+ 
+        st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int S = Integer.parseInt(st.nextToken());
+        int D = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+ 
+        
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i <= N; i++) { 
+            adj.add(new ArrayList<>());
+        }
+ 
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            adj.get(u).add(v);
+        }
+ 
+        int[] distS = new int[N + 1];
+        int[] parentS = new int[N + 1];
+        int[] distK = new int[N + 1];
+        int[] parentK = new int[N + 1];
+        
+        bfs(S, adj, distS, parentS);
+        bfs(K, adj, distK, parentK);
+        
+        if (distS[K] == -1 || distK[D] == -1) {
+            System.out.println(-1);
+            return;
+        }
+        
+        int length = distS[K] + distK[D];
+        
+        List<Integer> part1 = new ArrayList<>();
+        int cur = K;
+        while (cur != -1) {
+            part1.add(cur);
+            if (cur == S) break;
+            cur = parentS[cur];
+        }
+        if (cur == -1) { 
+            System.out.println(-1);
+            return;
+        }
+        Collections.reverse(part1); 
+        
+        List<Integer> part2 = new ArrayList<>();
+        cur = D;
+        while (cur != -1) {
+            part2.add(cur);
+            if (cur == K) break;
+            cur = parentK[cur];
+        }
+        if (cur == -1) {
+            System.out.println(-1);
+            return;
+        }
+        Collections.reverse(part2); 
+        
+        List<Integer> fullPath = new ArrayList<>();
+        fullPath.addAll(part1);
+        for (int i = 1; i < part2.size(); i++) { 
+            fullPath.add(part2.get(i));
+        }        
+        System.out.println(length);
+ 
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < fullPath.size(); i++) {
+            if (i > 0) sb.append(' ');
+            sb.append(fullPath.get(i));
+        }
+        System.out.println(sb.toString());
+    }
+}
+
+
+E
+import java.io.*;
+import java.util.*;
+ 
+public class subTree {
+ 
+    public static ArrayList<Integer>[] adjacencyList;
+    public static int[] subtreeSize;
+    public static boolean[] visited;
+ 
+    public static void main(String[] args) throws Exception {
+ 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer tokens = new StringTokenizer(reader.readLine());
+ 
+        int nodeCount = Integer.parseInt(tokens.nextToken());
+        int rootNode = Integer.parseInt(tokens.nextToken());
+ 
+        adjacencyList = new ArrayList[nodeCount + 1];
+        subtreeSize = new int[nodeCount + 1];
+        visited = new boolean[nodeCount + 1];
+ 
+        for (int i = 1; i <= nodeCount; i++) {
+            adjacencyList[i] = new ArrayList<>();
+        }
+ 
+        for (int i = 0; i < nodeCount - 1; i++) {
+            tokens = new StringTokenizer(reader.readLine());
+            int nodeA = Integer.parseInt(tokens.nextToken());
+            int nodeB = Integer.parseInt(tokens.nextToken());
+ 
+            adjacencyList[nodeA].add(nodeB);
+            adjacencyList[nodeB].add(nodeA);
+        }
+ 
+        computeSubtreeSize(rootNode);
+ 
+        int queryCount = Integer.parseInt(reader.readLine());
+ 
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < queryCount; i++) {
+            int queryNode = Integer.parseInt(reader.readLine());
+            output.append(subtreeSize[queryNode]).append("\n");
+        }
+        System.out.print(output);
+    }
+ 
+    public static void computeSubtreeSize(int currentNode) {
+        visited[currentNode] = true;
+        subtreeSize[currentNode] = 1; 
+ 
+        for (int neighbor : adjacencyList[currentNode]) {
+            if (!visited[neighbor]) {
+                computeSubtreeSize(neighbor);
+                subtreeSize[currentNode] += subtreeSize[neighbor];
+            }
+        }
+    }
+}
+
+
+F
+import java.io.*;
+import java.util.*;
+ 
+public class cycleDetection {
+ 
+    public static ArrayList<ArrayList<Integer>> adj;
+    public static int[] visited;
+    public static boolean hasCycle = false;
+ 
+    public static void dfs(int u) {
+        visited[u] = 1;  
+ 
+        for (int v : adj.get(u)) {
+            if (visited[v] == 0) {
+                dfs(v);
+            }
+            else if (visited[v] == 1) {
+                hasCycle = true;
+            }
+        }
+        visited[u] = 2;   
+    }
+ 
+    public static void main(String[] args) throws Exception {
+ 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+ 
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+ 
+        adj = new ArrayList<>();
+        for (int i = 0; i <= N; i++) adj.add(new ArrayList<>());
+ 
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            adj.get(u).add(v); 
+        }
+ 
+        visited = new int[N + 1];
+ 
+        
+        for (int i = 1; i <= N; i++) {
+            if (visited[i] == 0) dfs(i);
+        }
+ 
+        if (hasCycle) {
+          System.out.println("YES");
+        }
+        else {
+          System.out.println("NO");
+        }
+    }
+}
+
+
+G
+import java.io.*;
+import java.util.*;
+ 
+public class diamondCatch {
+    public static void main(String[] args) throws Exception {
+ 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer tokens = new StringTokenizer(reader.readLine());
+ 
+        int rowCount = Integer.parseInt(tokens.nextToken());
+        int colCount = Integer.parseInt(tokens.nextToken());
+ 
+        char[][] grid = new char[rowCount][colCount];
+ 
+        for (int row = 0; row < rowCount; row++) {
+            String line = reader.readLine();
+            grid[row] = line.toCharArray();
+        }
+ 
+        boolean[][] visited = new boolean[rowCount][colCount];
+        int maxDiamonds = 0;
+ 
+        int[] moveRow = {-1, 1, 0, 0};
+        int[] moveCol = {0, 0, -1, 1};
+ 
+        for (int startRow = 0; startRow < rowCount; startRow++) {
+            for (int startCol = 0; startCol < colCount; startCol++) {
+ 
+                if (grid[startRow][startCol] == '#' || visited[startRow][startCol]) {
+                    continue;
+                }
+                
+                int diamondCount = 0;
+                ArrayDeque<int[]> queue = new ArrayDeque<>();
+ 
+                queue.add(new int[]{startRow, startCol});
+                visited[startRow][startCol] = true;
+ 
+                while (!queue.isEmpty()) {
+                    int[] cell = queue.poll();
+                    int currentRow = cell[0];
+                    int currentCol = cell[1];
+ 
+                    if (grid[currentRow][currentCol] == 'D') {
+                        diamondCount++;
+                    }
+ 
+                    for (int k = 0; k < 4; k++) {
+                        int nextRow = currentRow + moveRow[k];
+                        int nextCol = currentCol + moveCol[k];
+ 
+                        if (nextRow >= 0 && nextRow < rowCount &&
+                            nextCol >= 0 && nextCol < colCount &&
+                            grid[nextRow][nextCol] != '#' &&
+                            !visited[nextRow][nextCol]) {
+ 
+                            visited[nextRow][nextCol] = true;
+                            queue.add(new int[]{nextRow, nextCol});
+                        }
+                    }
+                }
+                maxDiamonds = Math.max(maxDiamonds, diamondCount);
+            }
+        }
+        System.out.println(maxDiamonds);
+    }
+}
+
+
+
+
+import java.util.*;
+
+public class bfsTraversal {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        StringBuilder output = new StringBuilder();
+
+        // Keep reading test cases until input ends
+        while (sc.hasNextInt()) {
+            int N = sc.nextInt();
+            int M = sc.nextInt();
+
+            // adjacency list
+            ArrayList<Integer>[] adj = new ArrayList[N + 1];
+            for (int i = 1; i <= N; i++) {
+                adj[i] = new ArrayList<>();
+            }
+
+            // read M edges
+            for (int i = 0; i < M; i++) {
+                int u = sc.nextInt();
+                int v = sc.nextInt();
+                adj[u].add(v);
+                adj[v].add(u);
+            }
+
+            int[] colour = new int[N + 1]; // 0 = unvisited, 1 = visited
+            Queue<Integer> Q = new LinkedList<>();
+
+            colour[1] = 1;
+            Q.add(1);
+
+            StringBuilder sb = new StringBuilder();
+
+            while (!Q.isEmpty()) {
+                int u = Q.poll();
+                sb.append(u).append(" ");
+
+                for (int v : adj[u]) {
+                    if (colour[v] == 0) {
+                        colour[v] = 1;
+                        Q.add(v);
+                    }
+                }
+            }
+
+            // add this test's result to global output
+            output.append(sb.toString().trim()).append("\n");
+        }
+
+        // print all test case outputs
+        System.out.print(output.toString().trim());
+    }
+}
+
+
+int T = sc.nextInt();
+for (int tc = 0; tc < T; tc++) {
+    // read N, M, build graph, run BFS, print
+}
+
+
+

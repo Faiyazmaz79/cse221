@@ -1,0 +1,421 @@
+import java.io.*;
+ 
+public class twoSumTroble {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+ 
+        
+        String[] firstLine = br.readLine().trim().split(" ");
+        int N = Integer.parseInt(firstLine[0]);
+        int S = Integer.parseInt(firstLine[1]);
+ 
+        
+        String[] nums = br.readLine().trim().split(" ");
+        int[] a = new int[N];
+        for (int i = 0; i < N; i++) {
+            a[i] = Integer.parseInt(nums[i]);
+        }
+ 
+        int left = 0, right = N - 1;
+        boolean found = false;
+ 
+        while (left < right) {
+            int sum = a[left] + a[right];
+            if (sum == S) {
+                System.out.println((left + 1) + " " + (right + 1));
+                found = true;
+                break;
+            } else if (sum < S) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+ 
+        if (!found) {
+            System.out.println(-1);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+import java.util.*;
+ 
+public class revistSum {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        long K = sc.nextLong();
+ 
+        long[] A = new long[n];
+        long[] B = new long[m];
+ 
+        for (int i = 0; i < n; i++) A[i] = sc.nextLong();
+        for (int j = 0; j < m; j++) B[j] = sc.nextLong();
+ 
+        int i = 0;          
+        int j = m - 1;      
+        long bestDiff = Long.MAX_VALUE;
+        int bestI = 1, bestJ = 1;   
+ 
+        while (i < n && j >= 0) {
+            long sum = A[i] + B[j];
+            long diff = Math.abs(sum - K);
+ 
+            
+            if (diff < bestDiff
+                || (diff == bestDiff && (i + 1 < bestI
+                    || (i + 1 == bestI && j + 1 < bestJ)))) {
+                bestDiff = diff;
+                bestI = i + 1;
+                bestJ = j + 1;
+            }
+ 
+            if (sum == K) {
+                
+                System.out.println(bestI + " " + bestJ);
+                return;
+            } else if (sum > K) {
+                j--; 
+            } else {
+                i++; 
+            }
+        }
+ 
+        System.out.println(bestI + " " + bestJ);
+    }
+}
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class tripleTroble {
+ 
+    
+    static class Pair {
+        long value;
+        int index;
+        Pair(long value, int index) {
+            this.value = value;
+            this.index = index;
+        }
+    }
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+ 
+        
+        String[] first = br.readLine().trim().split("\\s+");
+        int n = Integer.parseInt(first[0]);
+        long x = Long.parseLong(first[1]);
+ 
+        
+        List<Long> nums = new ArrayList<>(n);
+        while (nums.size() < n) {
+            String line = br.readLine();
+            if (line == null) {
+              break;  
+            }
+            line = line.trim();
+            if (line.isEmpty()) {
+              continue;  
+            }
+            String[] parts = line.split("\\s+");
+            for (String t : parts) {
+              if (t.isEmpty()) {
+                continue;
+              }
+                nums.add(Long.parseLong(t));
+                if (nums.size() == n) {
+                  break;
+                }
+            }
+        }
+ 
+        
+        Pair[] a = new Pair[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = new Pair(nums.get(i), i + 1);
+        }
+ 
+        
+        Arrays.sort(a, (p, q) -> Long.compare(p.value, q.value));
+ 
+        
+        for (int i = 0; i < n - 2; i++) {
+            long need = x - a[i].value;
+            int left = i + 1, right = n - 1;
+ 
+            while (left < right) {
+                long sum = a[left].value + a[right].value;
+ 
+                if (sum == need) {
+                    
+                    System.out.println(a[i].index + " " + a[left].index + " " + a[right].index);
+                    return;
+                } else if (sum < need) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+ 
+        
+        System.out.println(-1);
+    }
+}
+
+
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class Main {
+    static class FastIn {
+        private final InputStream in = System.in;
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+ 
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+                if (len <= 0) return -1;
+            }
+            return buffer[ptr++];
+        }
+ 
+        int nextInt() throws IOException {
+            int c, sgn = 1, x = 0;
+            do { c = read(); } while (c <= ' ');     // skip spaces
+            if (c == '-') { sgn = -1; c = read(); }
+            while (c > ' ') { x = x * 10 + (c - '0'); c = read(); }
+            return x * sgn;
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastIn in = new FastIn();
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+ 
+        int n = in.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = in.nextInt();
+ 
+        int m = in.nextInt();
+        int[] b = new int[m];
+        for (int i = 0; i < m; i++) b[i] = in.nextInt();
+ 
+        int i = 0, j = 0;
+        StringBuilder sb = new StringBuilder();
+        while (i < n && j < m) {
+            if (a[i] <= b[j]) sb.append(a[i++]).append(' ');
+            else sb.append(b[j++]).append(' ');
+        }
+        while (i < n) sb.append(a[i++]).append(' ');
+        while (j < m) sb.append(b[j++]).append(' ');
+ 
+        out.println(sb.toString());
+        out.flush();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.*;
+ 
+public class longestSumsubarray {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        long K = sc.nextLong();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) arr[i] = sc.nextInt();
+ 
+        int left = 0;
+        long sum = 0;
+        int maxLen = 0;
+ 
+        
+        for (int right = 0; right < n; right++) {
+            sum += arr[right];
+ 
+            
+            while (sum > K && left <= right) {
+                sum -= arr[left];
+                left++;
+            }
+ 
+            
+            if (sum <= K) {
+                int len = right - left + 1;
+                if (len > maxLen) maxLen = len;
+            }
+        }
+ 
+        System.out.println(maxLen);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+import java.util.*;
+ 
+public class distinctSubarray {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        int k = sc.nextInt();
+ 
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {
+          a[i] = sc.nextInt();
+        }
+ 
+        
+        int[] freq = new int[n + 1];
+ 
+        int left = 0, distinct = 0, best = 0;
+ 
+        for (int right = 0; right < n; right++) {
+          if (freq[a[right]]++ == 0) {
+            distinct++;
+          }
+ 
+            while (distinct > k) {
+              if (--freq[a[left]] == 0) {
+                distinct--;
+              }
+                left++;
+            }
+ 
+            
+            int len = right - left + 1;
+            if (len > best) best = len;
+        }
+ 
+        System.out.println(best);
+    }
+}
+
+
+
+
+
+
+
+import java.util.*;
+ 
+public class countNum {
+    
+    static int lowerBound(int[] a, int x) {
+        int low = 0, high = a.length;
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (a[mid] >= x) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+ 
+    
+    static int upperBound(int[] a, int y) {
+        int low = 0, high = a.length;
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (a[mid] > y) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        int q = sc.nextInt();
+ 
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = sc.nextInt();
+ 
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < q; i++) {
+            int x = sc.nextInt();
+            int y = sc.nextInt();
+            int l = lowerBound(a, x);
+            int r = upperBound(a, y);
+            out.append(r - l).append('\n');
+        }
+ 
+        System.out.print(out.toString());
+    }
+}
+
+
+
+
+
+
+
+
+
+import java.util.*;
+ 
+public class searchingFun {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int T = sc.nextInt();
+        StringBuilder sb = new StringBuilder();
+ 
+        while (T-- > 0) {
+            long k = sc.nextLong();
+            long x = sc.nextLong();
+ 
+            long ans = k + (k - 1) / (x - 1);
+            sb.append(ans).append('\n');
+        }
+ 
+        System.out.print(sb.toString());
+    }
+}

@@ -1,0 +1,46 @@
+import java.util.*;
+ 
+ public class AncientsortingO {
+ 
+    
+    static void ascendRange(int[] a, int l, int r) {
+        for (int i = l + 1; i <= r; i++) {
+            int key = a[i];
+            int j = i - 1;
+            while (j >= l && a[j] > key) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        int n = sc.nextInt();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+          arr[i] = sc.nextInt();
+        }
+ 
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            
+            while (j + 1 < n && ((arr[j + 1] & 1) == (arr[i] & 1))) {
+              j++;
+            }
+            ascendRange(arr, i, j);
+            i = j + 1;
+        }
+ 
+        
+        for (int k = 0; k < n; k++) {
+            System.out.print(arr[k] + " ");
+        }
+        System.out.println();
+ 
+        sc.close();
+    }
+}

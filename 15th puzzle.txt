@@ -1,0 +1,162 @@
+15th puzzle 
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * 15-Puzzle solver using Backtracking + DFS (as in your algorithm):
+ * - visited set of states (strings)
+ * - recursive DFS with swap + backtrack
+ * - store moves on success (then print in reverse)
+ *
+ * Input format (16 tokens):
+ * 4 lines, each with 4 tokens: 1..15 and "-" for blank
+ *
+ * Example:
+ * 1 2 3 4
+ * 5 6 7 8
+ * 9 10 11 12
+ * 13 14 15 -
+ */
+public class FifteenPuzzleDFS {
+
+    static final int N = 4;
+
+    // Moves: Up, Down, Left, Right
+    static final int[] DR = {-1, 1, 0, 0};
+    static final int[] DC = {0, 0, -1, 1};
+    static final char[] MV = {'U', 'D', 'L', 'R'};
+
+    static final String GOAL_STATE = buildGoalState();
+
+    static String buildGoalState() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 15; i++) {
+            sb.append(i).append(',');
+        }
+        sb.append('-'); // last is blank
+        return sb.toString();
+    }
+
+    static boolean isSolved(String[][] board) {
+        return boardToString(board).equals(GOAL_STATE);
+    }
+
+    // IMPORTANT: use delimiter (comma) to avoid ambiguity (e.g., 1 + 11)
+    static String boardToString(String[][] board) {
+        StringBuilder sb = new StringBuilder(64);
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                sb.append(board[r][c]);
+                if (!(r == N - 1 && c == N - 1)) sb.append(',');
+            }
+        }
+        return sb.toString();
+    }
+
+    static int[] findBlank(String[][] board) {
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                if ("-".equals(board[r][c])) return new int[]{r, c};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    static void swap(String[][] board, int r1, int c1, int r2, int c2) {
+        String tmp = board[r1][c1];
+        board[r1][c1] = board[r2][c2];
+        board[r2][c2] = tmp;
+    }
+
+    /**
+     * DFS with backtracking.
+     * Returns true when solution found; moves are collected on the way back.
+     */
+    static boolean puzzle(String[][] board, int blankR, int blankC,
+                          Set<String> visited, List<Character> solutionMoves) {
+
+        // Base case
+        if (isSolved(board)) return true;
+
+        // Pruning via visited states
+        String state = boardToString(board);
+        if (visited.contains(state)) return false;
+        visited.add(state);
+
+        // Try all directions
+        for (int i = 0; i < 4; i++) {
+            int nr = blankR + DR[i];
+            int nc = blankC + DC[i];
+
+            if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
+                // do move
+                swap(board, blankR, blankC, nr, nc);
+
+                // recurse
+                if (puzzle(board, nr, nc, visited, solutionMoves)) {
+                    solutionMoves.add(MV[i]); // record move on success
+                    return true;
+                }
+
+                // backtrack
+                swap(board, blankR, blankC, nr, nc);
+            }
+        }
+        return false;
+    }
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[][] board = new String[N][N];
+
+        // Read 16 tokens (supports spaces/newlines)
+        List<String> tokens = new ArrayList<>(16);
+        while (tokens.size() < 16) {
+            String line = br.readLine();
+            if (line == null) break;
+            StringTokenizer st = new StringTokenizer(line);
+            while (st.hasMoreTokens() && tokens.size() < 16) {
+                tokens.add(st.nextToken());
+            }
+        }
+
+        if (tokens.size() != 16) {
+            System.out.println("Invalid input: need 16 tokens (1-15 and '-')");
+            return;
+        }
+
+        int idx = 0;
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                board[r][c] = tokens.get(idx++);
+            }
+        }
+
+        int[] blank = findBlank(board);
+        int br0 = blank[0], bc0 = blank[1];
+        if (br0 == -1) {
+            System.out.println("Invalid board: blank '-' not found");
+            return;
+        }
+
+        Set<String> visited = new HashSet<>();
+        List<Character> solutionMoves = new ArrayList<>();
+
+        boolean solved = puzzle(board, br0, bc0, visited, solutionMoves);
+
+        if (solved) {
+            System.out.println("Solved!");
+            // moves were added while unwinding recursion, so reverse to print forward order
+            Collections.reverse(solutionMoves);
+
+            StringBuilder ans = new StringBuilder();
+            for (char m : solutionMoves) ans.append(m);
+            System.out.println(ans.toString()); // e.g., "URDL..."
+            // If you want spaced moves:
+            // System.out.println(String.join(" ", solutionMoves.stream().map(String::valueOf).toList()));
+        } else {
+            System.out.println("No solution found");
+        }
+    }
+}

@@ -1,0 +1,753 @@
+no 1
+
+import java.io.*;
+import java.util.*;
+ 
+public class preRequisite {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+ 
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+ 
+        ArrayList<Integer>[] adjacent = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+          adjacent[i] = new ArrayList<>();
+        }
+ 
+        int[] indegree = new int[N + 1];
+ 
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+ 
+            adjacent[A].add(B);
+            indegree[B]++;
+        }
+        
+        ArrayDeque<Integer> qu = new ArrayDeque<>();
+        for (int i = 1; i <= N; i++) {
+          if (indegree[i] == 0) {
+            qu.add(i);
+          }
+        }
+ 
+        int[] order = new int[N];
+        int idx = 0;
+ 
+        while (!qu.isEmpty()) {
+            int u = qu.poll();
+            order[idx++] = u;
+ 
+            for (int v : adjacent[u]) {
+                indegree[v]--;
+                if (indegree[v] == 0) {
+                  qu.add(v);
+                }
+            }
+        }
+ 
+        if (idx != N) {
+            System.out.println(-1);
+            return;
+        }
+ 
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+          if (i > 0) {
+            sb.append(' ');
+          }
+            sb.append(order[i]);
+        }
+        System.out.println(sb);
+    }
+}
+
+
+no 2
+
+import java.io.*;
+import java.util.*;
+ 
+public class bipartiG {
+    public static class FastScanner {
+        private final InputStream in;
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+ 
+        FastScanner(InputStream is) {
+            in = is;
+        }
+ 
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+                if (len <= 0) {
+                  return -1;
+                }
+            }
+            return buffer[ptr++];
+        }
+ 
+        int nextInt() throws IOException {
+            int c;
+            do {
+                c = read();
+            } while (c <= ' ');
+ 
+            int sign = 1;
+            if (c == '-') {
+                sign = -1;
+                c = read();
+            }
+ 
+            int val = 0;
+            while (c > ' ') {
+                val = val * 10 + (c - '0');
+                c = read();
+            }
+            return val * sign;
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastScanner fs = new FastScanner(System.in);
+ 
+        int N = fs.nextInt();
+        int M = fs.nextInt();
+ 
+        ArrayList<ArrayList<Integer>> adjacent = new ArrayList<>();
+        for (int i = 0; i <= N; i++) {
+            adjacent.add(new ArrayList<>());
+        }
+ 
+        for (int i = 0; i < M; i++) {
+            int u = fs.nextInt();
+            int v = fs.nextInt();
+            adjacent.get(u).add(v);
+            adjacent.get(v).add(u);
+        }
+ 
+        int[] color = new int[N + 1];
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+ 
+        long ans = 0;
+ 
+        for (int i = 1; i <= N; i++) {
+          if (color[i] != 0) {
+            continue;
+          }
+           
+            color[i] = 1;
+            queue.add(i);
+ 
+            int count1 = 1;
+            int count2 = 0;
+ 
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+ 
+                for (int v : adjacent.get(u)) {
+                    if (color[v] == 0) {
+                        color[v] = -color[u];
+                        if (color[v] == 1) {
+                          count1++;
+                        }
+                        else count2++;
+                        queue.add(v);
+                    }
+                }
+            }
+ 
+            ans += Math.max(count1, count2);
+        }
+ 
+        System.out.println(ans);
+    }
+}
+
+no 3
+
+import java.io.*;
+import java.util.*;
+ 
+public class knightAtwo {
+    static int[] dx = {1, 2, 2, 1, -1, -2, -2, -1};
+    static int[] dy = {2, 1, -1, -2, -2, -1, 1, 2};
+ 
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+ 
+        int N = Integer.parseInt(br.readLine().trim());
+ 
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int x1 = Integer.parseInt(st.nextToken()) - 1;
+        int y1 = Integer.parseInt(st.nextToken()) - 1;
+        int x2 = Integer.parseInt(st.nextToken()) - 1;
+        int y2 = Integer.parseInt(st.nextToken()) - 1;
+ 
+        int[][] dist = new int[N][N];
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(dist[i], -1);
+        }
+ 
+        ArrayDeque<int[]> queue = new ArrayDeque<>();
+        queue.add(new int[]{x1, y1});
+        dist[x1][y1] = 0;
+ 
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int x = curr[0];
+            int y = curr[1];
+ 
+            if (x == x2 && y == y2) {
+                System.out.println(dist[x][y]);
+                return;
+            }
+ 
+            for (int i = 0; i < 8; i++) {
+                int nnx = x + dx[i];
+                int nny = y + dy[i];
+ 
+                if (nnx >= 0 && nny >= 0 && nnx < N && nny < N && dist[nnx][nny] == -1) {
+                    dist[nnx][nny] = dist[x][y] + 1;
+                    queue.add(new int[]{nnx, nny});
+                }
+            }
+        }
+        System.out.println(-1);
+    }
+}
+
+no 4
+
+import java.io.*;
+import java.util.*;
+ 
+public class unbalancedTree {
+    public static class FastScanner {
+        public final InputStream input;
+        public final byte[] buffer = new byte[1 << 16];
+        public int pointer = 0, length = 0;
+ 
+        FastScanner(InputStream inputStream) {
+            input = inputStream;
+        }
+ 
+        private int readByte() throws IOException {
+            if (pointer >= length) {
+                length = input.read(buffer);
+                pointer = 0;
+                if (length <= 0) return -1;
+            }
+            return buffer[pointer++];
+        }
+ 
+        int nextInt() throws IOException {
+            int c;
+            do {
+                c = readByte();
+            } while (c <= ' ');
+ 
+            int sign = 1;
+            if (c == '-') {
+                sign = -1;
+                c = readByte();
+            }
+ 
+            int value = 0;
+            while (c > ' ') {
+                value = value * 10 + (c - '0');
+                c = readByte();
+            }
+            return value * sign;
+        }
+    }
+    
+    public static int[] firstEdgeIndex;   
+    public static int[] destinationNode;  
+    public static int[] nextEdgeIndex;    
+    public static int totalEdges = 0;
+ 
+    public static void addUndirectedEdge(int from, int to) {
+        destinationNode[totalEdges] = to;
+        nextEdgeIndex[totalEdges] = firstEdgeIndex[from];
+        firstEdgeIndex[from] = totalEdges;
+        totalEdges++;
+    }
+ 
+    public static int[] bfsFindFarthestNode(int startNode, int numberOfNodes) {
+ 
+        int[] disFromStart = new int[numberOfNodes + 1];
+        Arrays.fill(disFromStart, -1);
+ 
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.add(startNode);
+        disFromStart[startNode] = 0;
+ 
+        int farthestNode = startNode;
+ 
+        while (!queue.isEmpty()) {
+            int currentNode = queue.poll();
+ 
+            if (disFromStart[currentNode] >
+                disFromStart[farthestNode]) {
+                farthestNode = currentNode;
+            }
+ 
+            for (int edge = firstEdgeIndex[currentNode];
+                 edge != -1;
+                 edge = nextEdgeIndex[edge]) {
+ 
+                int neighbor = destinationNode[edge];
+ 
+                if (disFromStart[neighbor] == -1) {
+                    disFromStart[neighbor] =
+                        disFromStart[currentNode] + 1;
+                    queue.add(neighbor);
+                }
+            }
+        }
+ 
+        return new int[]{
+            farthestNode,
+            disFromStart[farthestNode]
+        };
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastScanner scanner = new FastScanner(System.in);
+ 
+        int numberOfNodes = scanner.nextInt();
+ 
+        firstEdgeIndex = new int[numberOfNodes + 1];
+        Arrays.fill(firstEdgeIndex, -1);
+ 
+        destinationNode = new int[2 * (numberOfNodes - 1)];
+        nextEdgeIndex = new int[2 * (numberOfNodes - 1)];
+ 
+        for (int i = 0; i < numberOfNodes - 1; i++) {
+            int nodeU = scanner.nextInt();
+            int nodeV = scanner.nextInt();
+ 
+            addUndirectedEdge(nodeU, nodeV);
+            addUndirectedEdge(nodeV, nodeU);
+        }
+ 
+        int startEndpoint = bfsFindFarthestNode(1, numberOfNodes)[0];
+ 
+        int[] result = bfsFindFarthestNode(startEndpoint, numberOfNodes);
+        int endEndpoint = result[0];
+        int diameterLength = result[1];
+ 
+        System.out.println(diameterLength);
+        System.out.println(startEndpoint + " " + endEndpoint);
+    }
+}
+
+
+
+no 5
+
+import java.io.*;
+import java.util.*;
+ 
+public class difficultDestination {
+ 
+    public static class FastScanner {
+        private final InputStream input;
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+ 
+        FastScanner(InputStream in) {
+            input = in;
+        }
+ 
+        private int readByte() throws IOException {
+            if (ptr >= len) {
+                len = input.read(buffer);
+                ptr = 0;
+                if (len <= 0) return -1;
+            }
+            return buffer[ptr++];
+        }
+ 
+        int nextInt() throws IOException {
+            int c;
+            do { c = readByte(); } while (c <= ' ');
+            int sign = 1;
+            if (c == '-') { sign = -1; c = readByte(); }
+            int val = 0;
+            while (c > ' ') {
+                val = val * 10 + (c - '0');
+                c = readByte();
+            }
+            return val * sign;
+        }
+    }
+ 
+    public static int[] firstEdge, toNode, nextEdge;
+    public static int edgeCount = 0;
+ 
+    public static void addEdge(int u, int v) {
+        toNode[edgeCount] = v;
+        nextEdge[edgeCount] = firstEdge[u];
+        firstEdge[u] = edgeCount++;
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastScanner fs = new FastScanner(System.in);
+ 
+        int N = fs.nextInt();
+        int M = fs.nextInt();
+        int S = fs.nextInt();
+        int Q = fs.nextInt();
+ 
+        firstEdge = new int[N + 1];
+        Arrays.fill(firstEdge, -1);
+ 
+        toNode = new int[2 * M];
+        nextEdge = new int[2 * M];
+ 
+        for (int i = 0; i < M; i++) {
+            int u = fs.nextInt();
+            int v = fs.nextInt();
+            addEdge(u, v);
+            addEdge(v, u);
+        }
+ 
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, -1);
+ 
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+ 
+        for (int i = 0; i < S; i++) {
+            int src = fs.nextInt();
+            if (dist[src] == -1) {   
+                dist[src] = 0;
+                queue.add(src);
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            for (int e = firstEdge[u]; e != -1; e = nextEdge[e]) {
+                int v = toNode[e];
+                if (dist[v] == -1) {
+                    dist[v] = dist[u] + 1;
+                    queue.add(v);
+                }
+            }
+        }
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < Q; i++) {
+            int dest = fs.nextInt();
+            out.append(dist[dest]).append(' ');
+        }
+ 
+        System.out.print(out.toString());
+    }
+}
+
+
+no 6
+
+import java.io.*;
+import java.util.*;
+ 
+public class primeTarget {
+ 
+    public static final int MAX = 5000;
+    public static ArrayList<Integer>[] primeFactors = new ArrayList[MAX + 1];
+ 
+    public static void buildPrimeFactors() {
+      for (int i = 0; i <= MAX; i++) {
+        primeFactors[i] = new ArrayList<>();
+      }
+ 
+        int[] smallestprimef = new int[MAX + 1]; 
+        for (int i = 2; i <= MAX; i++) {
+            if (smallestprimef[i] == 0) {
+                smallestprimef[i] = i;
+                if ((long)i * i <= MAX) {
+                    for (int j = i * i; j <= MAX; j += i) {
+                      if (smallestprimef[j] == 0) {
+                        smallestprimef[j] = i;
+                      }
+                    }
+                }
+            }
+        }
+ 
+        for (int n = 2; n <= MAX; n++) {
+            int x = n;
+            int last = -1;
+            while (x > 1) {
+                int p = smallestprimef[x];
+                if (p != last) {
+                    if (p != n) primeFactors[n].add(p);
+                    last = p;
+                }
+                x /= p;
+            }
+        }
+    }
+ 
+    public static int bfsMinSteps(int s, int t) {
+        if (s == t) return 0;
+        if (s > t) return -1;
+ 
+        int[] dist = new int[t + 1];
+        Arrays.fill(dist, -1);
+ 
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        dist[s] = 0;
+        q.add(s);
+ 
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+ 
+            for (int p : primeFactors[cur]) {
+                int next = cur + p;
+                if (next <= t && dist[next] == -1) {
+                    dist[next] = dist[cur] + 1;
+                    if (next == t) {
+                      return dist[next];
+                    }
+                    q.add(next);
+                }
+            }
+        }
+        return -1;
+    }
+ 
+    public static class FastScanner {
+        private final InputStream in;
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+ 
+        FastScanner(InputStream is) { in = is; }
+ 
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+                if (len <= 0) return -1;
+            }
+            return buffer[ptr++];
+        }
+ 
+        int nextInt() throws IOException {
+            int c;
+            do { c = read(); } while (c <= ' ');
+            int sign = 1;
+            if (c == '-') { sign = -1; c = read(); }
+            int val = 0;
+            while (c > ' ') {
+                val = val * 10 + (c - '0');
+                c = read();
+            }
+            return val * sign;
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        buildPrimeFactors();
+        FastScanner fs = new FastScanner(System.in);
+ 
+        int T = fs.nextInt();
+        StringBuilder sb = new StringBuilder();
+ 
+        while (T-- > 0) {
+            int s = fs.nextInt();
+            int t = fs.nextInt();
+            sb.append(bfsMinSteps(s, t)).append('\n');
+        }
+ 
+        System.out.print(sb.toString());
+    }
+}
+
+
+
+no 7
+
+import java.io.*;
+import java.util.*;
+ 
+public class uNique {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine().trim());
+ 
+        String[] words = new String[N];
+        boolean[] used = new boolean[26];
+ 
+        for (int i = 0; i < N; i++) {
+            words[i] = br.readLine().trim();
+            for (int j = 0; j < words[i].length(); j++) {
+                used[words[i].charAt(j) - 'a'] = true;
+            }
+        }
+ 
+        ArrayList<Integer>[] adj = new ArrayList[26];
+        for (int i = 0; i < 26; i++) adj[i] = new ArrayList<>();
+ 
+        int[] indeg = new int[26];
+        boolean[][] edge = new boolean[26][26]; 
+ 
+        for (int i = 0; i < N - 1; i++) {
+            String a = words[i];
+            String b = words[i + 1];
+ 
+            int len = Math.min(a.length(), b.length());
+            int pos = 0;
+            while (pos < len && a.charAt(pos) == b.charAt(pos)) pos++;
+ 
+            if (pos == len && a.length() > b.length()) {
+                System.out.println(-1);
+                return;
+            }
+ 
+            if (pos < len) {
+                int u = a.charAt(pos) - 'a';
+                int v = b.charAt(pos) - 'a';
+                if (!edge[u][v]) {
+                    edge[u][v] = true;
+                    adj[u].add(v);
+                    indeg[v]++;
+                }
+            }
+        }
+ 
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int usedCount = 0;
+        for (int i = 0; i < 26; i++) {
+            if (used[i]) {
+                usedCount++;
+                if (indeg[i] == 0) {
+                    pq.add(i);
+                }
+            }
+        }
+ 
+        StringBuilder ans = new StringBuilder();
+ 
+        while (!pq.isEmpty()) {
+            int u = pq.poll();
+            ans.append((char) (u + 'a'));
+ 
+            for (int v : adj[u]) {
+                indeg[v]--;
+                if (indeg[v] == 0) pq.add(v);
+            }
+        }
+ 
+        if (ans.length() != usedCount) {
+            System.out.println(-1);
+        } else {
+            System.out.println(ans.toString());
+        }
+    }
+}
+
+just testing
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    static class FastScanner {
+        private final InputStream in;
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+
+        FastScanner(InputStream is) { in = is; }
+
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+                if (len <= 0) return -1;
+            }
+            return buffer[ptr++];
+        }
+
+        int nextInt() throws IOException {
+            int c;
+            do { c = read(); } while (c <= ' ' && c != -1);
+            if (c == -1) return Integer.MIN_VALUE; // no more input
+
+            int sign = 1;
+            if (c == '-') { sign = -1; c = read(); }
+
+            int val = 0;
+            while (c > ' ') {
+                val = val * 10 + (c - '0');
+                c = read();
+            }
+            return val * sign;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FastScanner fs = new FastScanner(System.in);
+        StringBuilder out = new StringBuilder();
+
+        int T = fs.nextInt();              // ✅ number of test cases
+        for (int tc = 0; tc < T; tc++) {
+
+            int N = fs.nextInt();
+            int M = fs.nextInt();
+
+            ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+            for (int i = 0; i <= N; i++) adj.add(new ArrayList<>());
+
+            int[] indeg = new int[N + 1];
+
+            for (int i = 0; i < M; i++) {
+                int A = fs.nextInt();
+                int B = fs.nextInt();
+                adj.get(A).add(B);
+                indeg[B]++;
+            }
+
+            ArrayDeque<Integer> q = new ArrayDeque<>();
+            for (int i = 1; i <= N; i++) {
+                if (indeg[i] == 0) q.add(i);
+            }
+
+            int[] order = new int[N];
+            int idx = 0;
+
+            while (!q.isEmpty()) {
+                int u = q.poll();
+                order[idx++] = u;
+
+                for (int v : adj.get(u)) {
+                    indeg[v]--;
+                    if (indeg[v] == 0) q.add(v);
+                }
+            }
+
+            if (idx != N) {
+                out.append("-1\n");
+            } else {
+                for (int i = 0; i < N; i++) {
+                    if (i > 0) out.append(' ');
+                    out.append(order[i]);
+                }
+                out.append('\n');
+            }
+        }
+
+        System.out.print(out.toString());
+    }
+}
+
+
+

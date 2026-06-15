@@ -1,0 +1,96 @@
+import java.util.*;
+ 
+public class Station {
+ 
+    
+    static class Train {
+        String rawLine;  
+        String name;     
+        int timeMin;     
+        int index;       
+ 
+        Train(String rawLine, int index) {
+            this.rawLine = rawLine;
+            this.index = index;
+ 
+            
+            String mid1 = " will departure for ";
+            String mid2 = " at ";
+ 
+            int p1 = rawLine.indexOf(mid1);
+            int p2 = rawLine.lastIndexOf(mid2);
+ 
+            
+            if (p1 < 0 || p2 < 0 || p2 + mid2.length() + 5 > rawLine.length()) {
+                
+                this.name = rawLine;
+                this.timeMin = 0;
+                return;
+            }
+ 
+            this.name = rawLine.substring(0, p1);
+ 
+            String t = rawLine.substring(p2 + mid2.length()); 
+            int hh = Integer.parseInt(t.substring(0, 2));
+            int mm = Integer.parseInt(t.substring(3, 5));
+            this.timeMin = hh * 60 + mm;
+        }
+    }
+ 
+    
+    static boolean better(Train a, Train b) {
+        int cmp = a.name.compareTo(b.name);
+        if (cmp != 0) return cmp > 0;                 
+        if (a.timeMin != b.timeMin) return b.timeMin > a.timeMin; 
+        return b.index < a.index;                     
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+ 
+        
+        int n;
+        if (sc.hasNextInt()) {
+            n = sc.nextInt();
+            sc.nextLine(); 
+        } else {
+            
+            return;
+        }
+ 
+        ArrayList<Train> trains = new ArrayList<>();
+ 
+        for (int i = 0; i < n; i++) {
+            String line = sc.nextLine();
+            
+            while (line != null && line.isEmpty()) {
+                line = sc.nextLine();
+            }
+            trains.add(new Train(line, i));
+        }
+ 
+        
+        for (int i = 0; i < n - 1; i++) {
+            int best = i;
+            for (int j = i + 1; j < n; j++) {
+                if (better(trains.get(best), trains.get(j))) {
+                    best = j;
+                }
+            }
+            if (best != i) {
+                Train tmp = trains.get(i);
+                trains.set(i, trains.get(best));
+                trains.set(best, tmp);
+            }
+        }
+ 
+        
+        StringBuilder out = new StringBuilder();
+        for (Train t : trains) {
+            out.append(t.rawLine).append('\n');
+        }
+        System.out.print(out.toString());
+ 
+        sc.close();
+    }
+}

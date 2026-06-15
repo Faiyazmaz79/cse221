@@ -1,0 +1,690 @@
+import java.io.*;
+import java.util.*;
+ 
+public class shortestPath {
+ 
+    public static class FastScanner {
+        private final InputStream input = System.in;
+        private final byte[] buffer = new byte[1 << 16];
+        private int pointer = 0, length = 0;
+ 
+        private int read() throws IOException {
+            if (pointer >= length) {
+                length = input.read(buffer);
+                pointer = 0;
+                if (length <= 0) return -1;
+            }
+            return buffer[pointer++];
+        }
+ 
+        int nextInt() throws IOException {
+            int ch;
+            while ((ch = read()) != -1 && ch <= ' ') {}
+ 
+            int sign = 1;
+            if (ch == '-') {
+                sign = -1;
+                ch = read();
+            }
+ 
+            int value = 0;
+            while (ch > ' ') {
+                value = value * 10 + (ch - '0');
+                ch = read();
+            }
+            return value * sign;
+        }
+    }
+ 
+    public static class Edge {
+        int destination;
+        int weight;
+ 
+        Edge(int destination, int weight) {
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+ 
+    public static class QueueState {
+        int node;
+        long distance;
+ 
+        QueueState(int node, long distance) {
+            this.node = node;
+            this.distance = distance;
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastScanner scanner = new FastScanner();
+ 
+        int nodeCount = scanner.nextInt();
+        int edgeCount = scanner.nextInt();
+        int sourceNode = scanner.nextInt();
+        int destinationNode = scanner.nextInt();
+ 
+        int[] edgeFrom = new int[edgeCount];
+        int[] edgeTo = new int[edgeCount];
+        int[] edgeWeight = new int[edgeCount];
+ 
+        for (int i = 0; i < edgeCount; i++) edgeFrom[i] = scanner.nextInt();
+        for (int i = 0; i < edgeCount; i++) edgeTo[i] = scanner.nextInt();
+        for (int i = 0; i < edgeCount; i++) edgeWeight[i] = scanner.nextInt();
+ 
+        List<List<Edge>> adjacencyList = new ArrayList<>(nodeCount + 1);
+        for (int i = 0; i <= nodeCount; i++) adjacencyList.add(new ArrayList<>());
+ 
+        for (int i = 0; i < edgeCount; i++) {
+            adjacencyList.get(edgeFrom[i]).add(new Edge(edgeTo[i], edgeWeight[i]));
+        }
+ 
+        long infiniteDistance = Long.MAX_VALUE / 4;
+        long[] minimumDistance = new long[nodeCount + 1];
+        int[] previousNode = new int[nodeCount + 1];
+ 
+        Arrays.fill(minimumDistance, infiniteDistance);
+        Arrays.fill(previousNode, -1);
+ 
+        PriorityQueue<QueueState> priorityQueue =
+                new PriorityQueue<>(Comparator.comparingLong(state -> state.distance));
+ 
+        minimumDistance[sourceNode] = 0;
+        priorityQueue.add(new QueueState(sourceNode, 0));
+ 
+        while (!priorityQueue.isEmpty()) {
+            QueueState currentState = priorityQueue.poll();
+            int currentNode = currentState.node;
+            long currentDistance = currentState.distance;
+ 
+            if (currentDistance != minimumDistance[currentNode]) continue;
+            if (currentNode == destinationNode) break;
+ 
+            for (Edge edge : adjacencyList.get(currentNode)) {
+                int nextNode = edge.destination;
+                long newDistance = currentDistance + edge.weight;
+ 
+                if (newDistance < minimumDistance[nextNode]) {
+                    minimumDistance[nextNode] = newDistance;
+                    previousNode[nextNode] = currentNode;
+                    priorityQueue.add(new QueueState(nextNode, newDistance));
+                }
+            }
+        }
+ 
+        if (minimumDistance[destinationNode] >= infiniteDistance) {
+            System.out.print("-1");
+            return;
+        }
+ 
+        ArrayList<Integer> path = new ArrayList<>();
+        int current = destinationNode;
+ 
+        while (current != -1) {
+            path.add(current);
+            if (current == sourceNode) break;
+            current = previousNode[current];
+        }
+ 
+        if (path.get(path.size() - 1) != sourceNode) {
+            System.out.print("-1");
+            return;
+        }
+ 
+        Collections.reverse(path);
+ 
+        StringBuilder output = new StringBuilder();
+        output.append(minimumDistance[destinationNode]).append('\n');
+ 
+        for (int i = 0; i < path.size(); i++) {
+            if (i > 0) output.append(' ');
+            output.append(path.get(i));
+        }
+ 
+        System.out.print(output.toString());
+    }
+}
+
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class whereToMeet {
+ 
+    public static class Edge {
+        int to;
+        int weight;
+ 
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+ 
+    public static class FastReader {
+        private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer tokenizer;
+ 
+        int nextInt() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                String line = reader.readLine();
+                if (line == null) return Integer.MIN_VALUE;
+                tokenizer = new StringTokenizer(line);
+            }
+            return Integer.parseInt(tokenizer.nextToken());
+        }
+    }
+ 
+    public static long[] dijkstra(List<List<Edge>> graph, int startNode) {
+        int nodeCount = graph.size() - 1;
+        long infinity = Long.MAX_VALUE / 4;
+ 
+        long[] distance = new long[nodeCount + 1];
+        Arrays.fill(distance, infinity);
+        distance[startNode] = 0;
+ 
+        PriorityQueue<long[]> pq = new PriorityQueue<>(Comparator.comparingLong(a -> a[0]));
+        pq.add(new long[]{0, startNode});
+ 
+        while (!pq.isEmpty()) {
+            long[] current = pq.poll();
+            long currentDistance = current[0];
+            int currentNode = (int) current[1];
+ 
+            if (currentDistance != distance[currentNode]) continue;
+ 
+            for (Edge edge : graph.get(currentNode)) {
+                int nextNode = edge.to;
+                long nextDistance = currentDistance + edge.weight;
+ 
+                if (nextDistance < distance[nextNode]) {
+                    distance[nextNode] = nextDistance;
+                    pq.add(new long[]{nextDistance, nextNode});
+                }
+            }
+        }
+ 
+        return distance;
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastReader input = new FastReader();
+ 
+        int nodeCount = input.nextInt();
+        int edgeCount = input.nextInt();
+        int aliceStart = input.nextInt();
+        int bobStart = input.nextInt();
+ 
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= nodeCount; i++) {
+            graph.add(new ArrayList<>());
+        }
+ 
+        for (int i = 0; i < edgeCount; i++) {
+            int from = input.nextInt();
+            int to = input.nextInt();
+            int w = input.nextInt();
+            graph.get(from).add(new Edge(to, w));
+        }
+ 
+        long[] distAlice = dijkstra(graph, aliceStart);
+        long[] distBob = dijkstra(graph, bobStart);
+ 
+        long infinity = Long.MAX_VALUE / 4;
+        long bestMeetingTime = infinity;
+        int bestMeetingNode = -1;
+ 
+        for (int node = 1; node <= nodeCount; node++) {
+            if (distAlice[node] >= infinity) continue;
+            if (distBob[node] >= infinity) continue;
+ 
+            long meetingTime = Math.max(distAlice[node], distBob[node]);
+ 
+            if (meetingTime < bestMeetingTime) {
+                bestMeetingTime = meetingTime;
+                bestMeetingNode = node;
+            } else if (meetingTime == bestMeetingTime && node < bestMeetingNode) {
+                bestMeetingNode = node;
+            }
+        }
+ 
+        if (bestMeetingNode == -1) {
+            System.out.print("-1");
+        } else {
+            System.out.print(bestMeetingTime + " " + bestMeetingNode);
+        }
+    }
+}
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class minimizetheDanger {
+ 
+    public static class FastReader {
+        private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer tokenizer;
+ 
+        int nextInt() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                String line = reader.readLine();
+                if (line == null) return Integer.MIN_VALUE;
+                tokenizer = new StringTokenizer(line);
+            }
+            return Integer.parseInt(tokenizer.nextToken());
+        }
+    }
+ 
+    public static class Edge {
+        int to;
+        int danger;
+ 
+        Edge(int to, int danger) {
+            this.to = to;
+            this.danger = danger;
+        }
+    }
+ 
+    public static class Check {
+        int node;
+        int bestDangerSoFar;
+ 
+        Check(int node, int bestDangerSoFar) {
+            this.node = node;
+            this.bestDangerSoFar = bestDangerSoFar;
+        }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastReader input = new FastReader();
+ 
+        int cityCount = input.nextInt();
+        int roadCount = input.nextInt();
+ 
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= cityCount; i++) {
+            graph.add(new ArrayList<>());
+        }
+ 
+        for (int i = 0; i < roadCount; i++) {
+            int cityA = input.nextInt();
+            int cityB = input.nextInt();
+            int danger = input.nextInt();
+ 
+            graph.get(cityA).add(new Edge(cityB, danger));
+            graph.get(cityB).add(new Edge(cityA, danger));
+        }
+ 
+        int infinity = Integer.MAX_VALUE;
+        int[] minDanger = new int[cityCount + 1];
+        Arrays.fill(minDanger, infinity);
+ 
+        PriorityQueue<Check> pq =
+                new PriorityQueue<>(Comparator.comparingInt(c -> c.bestDangerSoFar));
+ 
+        minDanger[1] = 0;
+        pq.add(new Check(1, 0));
+ 
+        while (!pq.isEmpty()) {
+            Check current = pq.poll();
+            int currentCity = current.node;
+            int currentBestDanger = current.bestDangerSoFar;
+ 
+            if (currentBestDanger != minDanger[currentCity]) continue;
+ 
+            for (Edge edge : graph.get(currentCity)) {
+                int nextCity = edge.to;
+                int dangerIfGoThere = Math.max(currentBestDanger, edge.danger);
+ 
+                if (dangerIfGoThere < minDanger[nextCity]) {
+                    minDanger[nextCity] = dangerIfGoThere;
+                    pq.add(new Check(nextCity, dangerIfGoThere));
+                }
+            }
+        }
+ 
+        StringBuilder output = new StringBuilder();
+ 
+        for (int city = 1; city <= cityCount; city++) {
+            int printedValue;
+ 
+            if (minDanger[city] == infinity) {
+                printedValue = -1;
+            } else {
+                printedValue = minDanger[city];
+            }
+ 
+            if (city > 1) output.append(' ');
+            output.append(printedValue);
+        }
+ 
+        System.out.print(output.toString());
+    }
+}
+
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class beautifulPath {
+ 
+    public static class FastReader {
+        private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer tokenizer;
+ 
+        int nextInt() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                String line = reader.readLine();
+                if (line == null) return Integer.MIN_VALUE;
+                tokenizer = new StringTokenizer(line);
+            }
+            return Integer.parseInt(tokenizer.nextToken());
+        }
+    }
+ 
+    public static class Edge {
+        int to;
+        Edge(int to) { 
+          this.to = to; 
+        }
+    }
+ 
+    public static class QueueItem {
+        int node;
+        long cost;
+        QueueItem(int node, long cost) { this.node = node; this.cost = cost; }
+    }
+ 
+    public static void main(String[] args) throws Exception {
+        FastReader input = new FastReader();
+ 
+        int nodeCount = input.nextInt();
+        int edgeCount = input.nextInt();
+        int source = input.nextInt();
+        int destination = input.nextInt();
+ 
+        int[] nodeWeight = new int[nodeCount + 1];
+        for (int i = 1; i <= nodeCount; i++) nodeWeight[i] = input.nextInt();
+ 
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= nodeCount; i++) graph.add(new ArrayList<>());
+ 
+        for (int i = 0; i < edgeCount; i++) {
+            int from = input.nextInt();
+            int to = input.nextInt();
+            graph.get(from).add(new Edge(to));
+        }
+ 
+        long INF = Long.MAX_VALUE / 4;
+        long[] minCost = new long[nodeCount + 1];
+        Arrays.fill(minCost, INF);
+ 
+        PriorityQueue<QueueItem> pq =
+                new PriorityQueue<>(Comparator.comparingLong(a -> a.cost));
+ 
+        minCost[source] = nodeWeight[source];
+        pq.add(new QueueItem(source, minCost[source]));
+ 
+        while (!pq.isEmpty()) {
+            QueueItem current = pq.poll();
+            int currentNode = current.node;
+            long currentCost = current.cost;
+ 
+            if (currentCost != minCost[currentNode]) continue;
+            if (currentNode == destination) break;
+ 
+            for (Edge edge : graph.get(currentNode)) {
+                int nextNode = edge.to;
+                long nextCost = currentCost + nodeWeight[nextNode];
+ 
+                if (nextCost < minCost[nextNode]) {
+                    minCost[nextNode] = nextCost;
+                    pq.add(new QueueItem(nextNode, nextCost));
+                }
+            }
+        }
+ 
+        if (minCost[destination] >= INF) {
+            System.out.print("-1");
+        } else {
+            System.out.print(minCost[destination]);
+        }
+    }
+}
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+ 
+public class partyEdges {
+    public static class FastReader {
+        private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer tokenizer;
+ 
+        int nextInt() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                String line = reader.readLine();
+                if (line == null) return Integer.MIN_VALUE;
+                tokenizer = new StringTokenizer(line);
+            }
+            return Integer.parseInt(tokenizer.nextToken());
+        }
+    }
+    public static class Edge {
+        int to;
+        int weight;
+        int parity; 
+ 
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+            this.parity = weight & 1;
+        }
+    }
+    public static class QueueItem {
+        int node;
+        int lastParity; // 0 or 1
+        long distance;
+ 
+        QueueItem(int node, int lastParity, long distance) {
+            this.node = node;
+            this.lastParity = lastParity;
+            this.distance = distance;
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        FastReader input = new FastReader();
+ 
+        int nodeCount = input.nextInt();
+        int edgeCount = input.nextInt();
+ 
+        int[] from = new int[edgeCount];
+        int[] to = new int[edgeCount];
+        int[] weight = new int[edgeCount];
+ 
+        for (int i = 0; i < edgeCount; i++) from[i] = input.nextInt();
+        for (int i = 0; i < edgeCount; i++) to[i] = input.nextInt();
+        for (int i = 0; i < edgeCount; i++) weight[i] = input.nextInt();
+ 
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= nodeCount; i++) graph.add(new ArrayList<>());
+ 
+        for (int i = 0; i < edgeCount; i++) {
+            graph.get(from[i]).add(new Edge(to[i], weight[i]));
+        }
+ 
+        long INF = Long.MAX_VALUE / 4;
+        long[][] bestDistance = new long[nodeCount + 1][2];
+        for (int i = 1; i <= nodeCount; i++) {
+            bestDistance[i][0] = INF;
+            bestDistance[i][1] = INF;
+        }
+        
+        PriorityQueue<QueueItem> pq =
+                new PriorityQueue<>(Comparator.comparingLong(a -> a.distance));
+ 
+        int startNode = 1;
+        int targetNode = nodeCount;
+ 
+        for (Edge e : graph.get(startNode)) {
+            int nextNode = e.to;
+            int p = e.parity;
+            long newDist = (long) e.weight;
+            if (newDist < bestDistance[nextNode][p]) {
+                bestDistance[nextNode][p] = newDist;
+                pq.add(new QueueItem(nextNode, p, newDist));
+            }
+        }
+        while (!pq.isEmpty()) {
+            QueueItem current = pq.poll();
+            int currentNode = current.node;
+            int lastParity = current.lastParity;
+            long currentDist = current.distance;
+ 
+            if (currentDist != bestDistance[currentNode][lastParity]) continue;
+ 
+            for (Edge e : graph.get(currentNode)) {
+                int nextNode = e.to;
+                int nextParity = e.parity;
+ 
+                if (nextParity == lastParity) continue;
+ 
+                long newDist = currentDist + e.weight;
+                if (newDist < bestDistance[nextNode][nextParity]) {
+                    bestDistance[nextNode][nextParity] = newDist;
+                    pq.add(new QueueItem(nextNode, nextParity, newDist));
+                }
+            }
+        }
+        long answer = Math.min(bestDistance[targetNode][0], bestDistance[targetNode][1]);
+        if (answer >= INF) {
+          System.out.print("-1");
+        }
+        else {
+          System.out.print(answer);
+        }
+    }
+}
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+
+public class shortestPathhRV {
+
+    public static class FastReader {
+        private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer tokenizer;
+
+        int nextInt() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                String line = reader.readLine();
+                if (line == null) return Integer.MIN_VALUE;
+                tokenizer = new StringTokenizer(line);
+            }
+            return Integer.parseInt(tokenizer.nextToken());
+        }
+    }
+
+    public static class Edge {
+        int to;
+        int weight;
+
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
+    public static class QueueItem {
+        int node;
+        long dist;
+
+        QueueItem(int node, long dist) {
+            this.node = node;
+            this.dist = dist;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FastReader input = new FastReader();
+
+        int nodeCount = input.nextInt();
+        int edgeCount = input.nextInt();
+        int source = input.nextInt();
+        int destination = input.nextInt();
+
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= nodeCount; i++) graph.add(new ArrayList<>());
+
+        for (int i = 0; i < edgeCount; i++) {
+            int a = input.nextInt();
+            int b = input.nextInt();
+            int w = input.nextInt();
+            graph.get(a).add(new Edge(b, w));
+            graph.get(b).add(new Edge(a, w));
+        }
+
+        long INF = Long.MAX_VALUE / 4;
+        long[] best = new long[nodeCount + 1];
+        long[] secondBest = new long[nodeCount + 1];
+        Arrays.fill(best, INF);
+        Arrays.fill(secondBest, INF);
+
+        PriorityQueue<QueueItem> pq = new PriorityQueue<>(Comparator.comparingLong(x -> x.dist));
+
+        best[source] = 0;
+        pq.add(new QueueItem(source, 0));
+
+        while (!pq.isEmpty()) {
+            QueueItem current = pq.poll();
+            int node = current.node;
+            long dist = current.dist;
+
+            if (dist > secondBest[node]) continue;
+
+            for (Edge edge : graph.get(node)) {
+                int next = edge.to;
+                long newDist = dist + edge.weight;
+
+                if (newDist < best[next]) {
+                    secondBest[next] = best[next];
+                    best[next] = newDist;
+                    pq.add(new QueueItem(next, best[next]));
+                    if (secondBest[next] < INF) pq.add(new QueueItem(next, secondBest[next]));
+                } else if (newDist > best[next] && newDist < secondBest[next]) {
+                    secondBest[next] = newDist;
+                    pq.add(new QueueItem(next, secondBest[next]));
+                }
+            }
+        }
+
+        if (secondBest[destination] >= INF) {
+            System.out.print("-1");
+        } else {
+            System.out.print(secondBest[destination]);
+        }
+    }
+}
